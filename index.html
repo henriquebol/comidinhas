@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joguinho - Comidinhas</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        .hb {
+            display: flex;
+            border: rgb(96, 140, 160);
+            border-style: solid;
+            margin-bottom: 10px;
+        }
+        .hb-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .chart-image {
+            max-width: 100px;
+            margin-right: 10px;
+            z-index: 9999;
+        }
+
+        .chart-bar {
+            margin-left: -70px;
+        }
+
+        .hb-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        #especial_hb {
+            margin-top: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="hb">
+        <div class="hb-left">
+            <div class="chart-container">
+                <img class="chart-image" src="images\water.png" alt="Imagem 1">
+                <div class="chart-bar", id="chart_div_0"></div>
+            </div>
+            <div class="chart-container">
+                <img class="chart-image" src="images\carbo.png" alt="Imagem 2">
+                <div class="chart-bar", id="chart_div_1"></div>
+            </div>
+            <div class="chart-container">
+                <img class="chart-image" src="images\fat.png" alt="Imagem 1">
+                <div class="chart-bar", id="chart_div_2"></div>
+            </div>
+            <div class="chart-container">
+                <img class="chart-image" src="images\protein.png" alt="Imagem 2">
+                <div class="chart-bar", id="chart_div_3"></div>
+            </div>
+            <div class="chart-container">
+                <img class="chart-image" src="images\fiber.png" alt="Imagem 1">
+                <div class="chart-bar", id="chart_div_4"></div>
+            </div>
+        </div>
+        <div class="hb-right">
+            <img id="especial_hb" src="" alt="Imagem 1">
+        </div>
+    </div>
+    <div class="hb">
+        <div class="hb-left">
+            <div class="chart-container">
+                <img class="chart-image" src="images\water.png" alt="Imagem 1">
+                <div class="chart-bar", id="chart_div_0"></div>
+            </div>
+            <div class="chart-container">
+                <img class="chart-image" src="images\carbo.png" alt="Imagem 2">
+                <div class="chart-bar", id="chart_div_1"></div>
+            </div>
+            <div class="chart-container">
+                <img class="chart-image" src="images\fat.png" alt="Imagem 1">
+                <div class="chart-bar", id="chart_div_2"></div>
+            </div>
+            <div class="chart-container">
+                <img class="chart-image" src="images\protein.png" alt="Imagem 2">
+                <div class="chart-bar", id="chart_div_3"></div>
+            </div>
+            <div class="chart-container">
+                <img class="chart-image" src="images\fiber.png" alt="Imagem 1">
+                <div class="chart-bar", id="chart_div_4"></div>
+            </div>
+        </div>
+        <div class="hb-right">
+            <img id="especial_hb" src="" alt="Imagem 1">
+        </div>
+    </div>
+    <div class="hb">
+        <div class="hb-left">
+            <div class="chart-container">
+                <img class="chart-image" src="images\water.png" alt="Imagem 1">
+                <div class="chart-bar", id="chart_div_0"></div>
+            </div>
+            <div class="chart-container">
+                <img class="chart-image" src="images\carbo.png" alt="Imagem 2">
+                <div class="chart-bar", id="chart_div_1"></div>
+            </div>
+            <div class="chart-container">
+                <img class="chart-image" src="images\fat.png" alt="Imagem 1">
+                <div class="chart-bar", id="chart_div_2"></div>
+            </div>
+            <div class="chart-container">
+                <img class="chart-image" src="images\protein.png" alt="Imagem 2">
+                <div class="chart-bar", id="chart_div_3"></div>
+            </div>
+            <div class="chart-container">
+                <img class="chart-image" src="images\fiber.png" alt="Imagem 1">
+                <div class="chart-bar", id="chart_div_4"></div>
+            </div>
+        </div>
+        <div class="hb-right">
+            <img id="especial_hb" src="" alt="Imagem 1">
+        </div>
+    </div>
+    <script>
+
+        function updatePage() {
+            drawChart();
+            setTimeout(updatePage, 30000);
+        }
+
+        function reloadPage() {
+            location.reload(); // Recarregar a página
+        }
+        
+        // Carregue a biblioteca Google Charts
+        google.charts.load('current', {'packages':['corechart']});
+        
+        // Callback para quando a biblioteca estiver carregada
+        google.charts.setOnLoadCallback(updatePage);
+
+        var base = 2451;
+        var googleSheetsBaseUrl = 'https://sheets.googleapis.com/v4/spreadsheets/';
+        var sheetId = secrets.APP_SHEETID;
+        var range = secrets.APP_RANGE;
+        var apiKey = secrets.APP_APIKEY;
+
+        var apiURL = `${googleSheetsBaseUrl}${sheetId}/values/${range}?key=${apiKey}`;
+
+        console.log(apiURL);
+
+        // Função para desenhar o gráfico
+        function drawChart() {
+            // Use a API do Google Sheets para buscar os dados
+            fetch(apiURL)
+            .then(response => response.json())
+                .then(data => {
+                    const labels = data.values[0]; // Rótulos das categorias
+                    const lastRow = data.values[data.values.length - 1]; // Última linha dos dados
+                    const limits = [8, base*0.55/4, base*0.35/9, base*0.20/4, 6]; // Limites para cada coluna
+
+                    for (let colIndex = 0; colIndex < labels.length; colIndex++) {
+                        const label = labels[colIndex];
+                        const value = parseFloat(lastRow[colIndex]);
+                        const limit = limits[colIndex];
+                        const limitedValue = Math.min(value, limit);
+
+                        const dataTable = new google.visualization.DataTable();
+                        dataTable.addColumn('string', 'Label');
+                        dataTable.addColumn('number', label);
+
+                        dataTable.addRow([label, limitedValue]);
+
+                        // Calcula a porcentagem de conclusão
+                        const completionPercentage = (value / limit) * 100;
+
+                        console.log(limit);
+                        // Define a cor da barra com base na porcentagem de conclusão
+                        let barColor = 'red'; // Vermelho por padrão
+
+                        if (completionPercentage >= 20 && completionPercentage < 50) {
+                            barColor = 'yellow'; // Amarelo entre 20% e 49%
+                        } else if (completionPercentage >= 50 && completionPercentage < 99) {
+                            barColor = 'green'; // Verde entre 50% e 98%
+                        } else if (completionPercentage >= 99) {
+                            barColor = 'purple'; // Dourado em 99% e acima
+                        }
+
+                        // Calcular a soma dos valores no lastRow
+                        const sumValues = lastRow.reduce((sum, value) => sum + parseFloat(value), 0);
+
+                        // Calcular os limites para as condições
+                        const totalPercentage = (sumValues * 100) / base;
+                        console.log(totalPercentage);
+                        console.log(totalPercentage);
+                        // Selecionar a imagem com base na soma
+                        const especialImage = document.getElementById('especial_hb');
+
+                        especialImage.src = "images\\sad.png";
+                        if (totalPercentage >= 40 && totalPercentage < 80) {
+                            especialImage.src = "images\\normal.png";
+                        } else if (totalPercentage >= 80 && totalPercentage < 99) {
+                            especialImage.src = "images\\happy.png";
+                        } else if (totalPercentage >= 99) {
+                            especialImage.src = "images\\choco.png";
+                        }
+
+                        const options = {
+                            title: `Gráfico para ${label}`,
+                            width: 800,
+                            height: 50, // Altura menor para parecer uma barra de progresso
+                            bar: { groupWidth: '95%' }, // Define a cor da barra
+                            colors: [barColor], // Define a cor da barra
+                            hAxis: {
+                                minValue: 0, // Definir o valor mínimo do eixo X
+                                maxValue: limit, // Definir o valor máximo do eixo X para o limite
+                                textPosition: 'none' // Remover as guias do eixo X
+                            },
+                            legend: 'none', // Remover a legenda
+                            vAxis: {
+                                textPosition: 'none', // Remover as guias do eixo Y
+                                gridlines: { count: 0 }, // Remover as linhas de grade do eixo Y
+                            }
+                        };
+
+                        const chart = new google.visualization.BarChart(document.getElementById(`chart_div_${colIndex}`));
+                        chart.draw(dataTable, options);
+
+                    }
+                 })
+                .catch(error => {
+                    console.error('Erro ao carregar os dados da planilha:', error);
+                });
+        }
+    </script>
+    <button onclick="reloadPage()">Recarregar</button>
+</body>
+</html>
